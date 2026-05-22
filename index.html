@@ -291,6 +291,74 @@
       line-height: 1.35;
     }
 
+    .pool-panel {
+      border: 1px solid rgba(220, 226, 237, .95);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .72);
+      box-shadow: var(--soft-shadow);
+      overflow: hidden;
+    }
+
+    .pool-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(220, 226, 237, .82);
+    }
+
+    .pool-head h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .pool-head span {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pool-grid {
+      max-height: 280px;
+      overflow: auto;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .pool-card {
+      min-width: 0;
+      border: 1px solid rgba(220, 226, 237, .86);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .78);
+      padding: 8px 6px;
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+    }
+
+    .pool-card img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 8px rgba(24, 31, 44, .12));
+    }
+
+    .pool-card span {
+      width: 100%;
+      color: var(--soft-ink);
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .workspace {
       display: grid;
       gap: 14px;
@@ -668,6 +736,10 @@
         grid-template-columns: 1fr;
       }
 
+      .pool-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
       h1 {
         max-width: 8.5em;
         font-size: clamp(31px, 10.5vw, 42px);
@@ -739,6 +811,14 @@
           <div class="trait-pill"><b>Playful</b><span>재치, 자유로움, 활력</span></div>
           <div class="trait-pill"><b>Social</b><span>연결, 표현, 분위기</span></div>
         </div>
+
+        <section class="pool-panel" aria-labelledby="poolTitle">
+          <div class="pool-head">
+            <h2 id="poolTitle">나올 수 있는 포켓몬</h2>
+            <span id="poolCount"></span>
+          </div>
+          <div class="pool-grid" id="candidatePool"></div>
+        </section>
       </section>
 
       <section class="workspace">
@@ -930,6 +1010,58 @@
       { id: 908, traits: { playful: 4, clever: 3, social: 2 }, title: "화려하고 영리한 무대형 타입", reason: "표현력이 좋고, 눈치와 재치를 함께 쓰는 순간 빛나요." }
     ];
 
+    const candidateNames = {
+      1: "이상해씨",
+      4: "파이리",
+      7: "꼬부기",
+      25: "피카츄",
+      39: "푸린",
+      52: "나옹",
+      54: "고라파덕",
+      59: "윈디",
+      65: "후딘",
+      94: "팬텀",
+      131: "라프라스",
+      133: "이브이",
+      143: "잠만보",
+      149: "망나뇽",
+      150: "뮤츠",
+      151: "뮤",
+      152: "치코리타",
+      155: "브케인",
+      158: "리아코",
+      175: "토게피",
+      197: "블래키",
+      212: "핫삼",
+      214: "헤라크로스",
+      229: "헬가",
+      248: "마기라스",
+      282: "가디안",
+      302: "깜까미",
+      330: "플라이곤",
+      350: "밀로틱",
+      359: "앱솔",
+      373: "보만다",
+      384: "레쿠쟈",
+      393: "팽도리",
+      405: "렌트라",
+      448: "루카리오",
+      468: "토게키스",
+      475: "엘레이드",
+      497: "샤로다",
+      571: "조로아크",
+      579: "란쿨루스",
+      609: "샹델라",
+      635: "삼삼드래",
+      658: "개굴닌자",
+      700: "님피아",
+      724: "모크나이퍼",
+      778: "따라큐",
+      812: "고릴타",
+      887: "드래펄트",
+      908: "마스카나"
+    };
+
     const state = { step: 0, picks: [] };
     const progress = document.querySelector("#progress");
     const questionCount = document.querySelector("#questionCount");
@@ -943,6 +1075,18 @@
     const loading = document.querySelector("#loading");
     const status = document.querySelector("#status");
     const quiz = document.querySelector(".quiz");
+    const candidatePool = document.querySelector("#candidatePool");
+    const poolCount = document.querySelector("#poolCount");
+
+    function renderCandidatePool() {
+      poolCount.textContent = `${candidates.length}종`;
+      candidatePool.innerHTML = candidates.map((candidate) => `
+        <article class="pool-card">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${candidate.id}.png" alt="${candidateNames[candidate.id]}">
+          <span>${candidateNames[candidate.id]}</span>
+        </article>
+      `).join("");
+    }
 
     function renderQuestion() {
       const question = questions[state.step];
@@ -1142,6 +1286,7 @@
 
     resetBtn.addEventListener("click", resetQuiz);
     window.resetQuiz = resetQuiz;
+    renderCandidatePool();
     renderQuestion();
   </script>
 </body>
